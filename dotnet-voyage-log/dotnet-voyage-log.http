@@ -1,0 +1,6 @@
+@dotnet_voyage_log_HostAddress = http://localhost:5029
+
+GET {{dotnet_voyage_log_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
