@@ -2,6 +2,7 @@ using dotnet_voyage_log.Context;
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Repository;
 using dotnet_voyage_log.Service;
+using dotnet_voyage_log.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<DataContext>();
-
+builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
+builder.Services.AddScoped<IConfigs, Configs>();
+builder.Services.AddScoped<IAuthentication, Authentication>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

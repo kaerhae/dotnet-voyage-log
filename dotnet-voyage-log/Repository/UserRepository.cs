@@ -30,6 +30,14 @@ public class UserRepository : IUserRepository
         }
     }
 
+    public User RetrieveSingleUserByUsername(string username) {
+        try {
+            return _context.Users.Where(x => x.Username == username).First();
+        } catch (Exception e) {
+            throw new Exception("Internal server error");
+        }
+    }
+
     public void InsertUser(User newUser){
        try {
             _context.Users.Add(newUser);

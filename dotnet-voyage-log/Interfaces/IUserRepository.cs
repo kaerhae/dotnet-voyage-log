@@ -8,4 +8,5 @@ public interface IUserRepository {
     public void InsertUser(User newUser);
     public void UpdateAllFields(User updatedUser);
     public void DeleteUser(User user);
+    public User RetrieveSingleUserByUsername(string username);
 }

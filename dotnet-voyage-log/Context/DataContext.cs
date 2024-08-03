@@ -1,13 +1,14 @@
 using dotnet_voyage_log.Models;
+using dotnet_voyage_log.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace dotnet_voyage_log.Context;
 public class DataContext : DbContext
 {
-    protected readonly IConfiguration _config;
+    protected readonly Configs _config;
 
-    public DataContext(IConfiguration configuration)
+    public DataContext(Configs configuration)
     {
         _config = configuration;
     }
@@ -17,7 +18,7 @@ public class DataContext : DbContext
         Console.WriteLine(JsonConvert.SerializeObject(_config, Formatting.Indented));
         // connect to postgres with connection string from app settings
         options
-            .UseNpgsql(_config["ConnectionStrings:PostgresConn"]);
+            .UseNpgsql(_config.GetConnectionString());
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

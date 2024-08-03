@@ -1,14 +1,35 @@
+using BCrypt.Net;
 using dotnet_voyage_log.Context;
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Models;
 using Newtonsoft.Json;
 
+
 namespace dotnet_voyage_log.Service;
 public class UserService : IUserService {
 
     private readonly IUserRepository _repository;
-    public UserService(IUserRepository repository) {
+    private readonly ITokenGenerator _generator;
+    private readonly IAuthentication _auth;
+    public UserService(IUserRepository repository, ITokenGenerator generator, IAuthentication auth) {
         _repository = repository;
+        _generator = generator;
+        _auth = auth;
+    }
+
+    public string LoginUser(LoginUser user) {
+        user.CheckLoginUser();
+        User isUser = _repository.RetrieveSingleUserByUsername(user.Username);
+        if (isUser == null) {
+            throw new Exception("User not found");
+        }
+
+        bool isCorrectPassword = _auth.IsValidPassword(isUser.PasswdHash, user.Password);
+        if (!isCorrectPassword) {
+            throw new Exception("Incorrect password");
+        }
+        
+        return _generator.GenerateToken(isUser);
     }
 
     public List<User> GetAll() {
