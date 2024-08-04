@@ -1,11 +1,7 @@
-using Castle.Core.Configuration;
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Models;
 using dotnet_voyage_log.Utilities;
-using Microsoft.Extensions.Configuration;
 using Moq;
-using Newtonsoft.Json;
-using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace dotnet_voyage_log.Tests.Utilities;
 
@@ -30,6 +26,7 @@ public class TokenGeneratorTests
 
         User u = new User(){
             Username = "test",
+            PasswdHash = "1234",
             AppRole = "admin"
         };
 
