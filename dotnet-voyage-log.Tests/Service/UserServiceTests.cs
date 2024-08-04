@@ -28,7 +28,8 @@ public class UserServiceTests
         User user = new User() {
                 Id = 0,
                 Username = "Test",
-                PasswdHash = "1234"
+                PasswdHash = "1234",
+                AppRole = "user"
             };
         LoginUser lUser = new LoginUser(){
             Username = "Test",
@@ -50,7 +51,8 @@ public class UserServiceTests
         User user = new User() {
                 Id = 0,
                 Username = "Test",
-                PasswdHash = "1234"
+                PasswdHash = "1234",
+                AppRole = "user"
             };
         LoginUser lUser = new LoginUser(){
             Username = "Test",
@@ -68,7 +70,8 @@ public class UserServiceTests
         User user = new User() {
                 Id = 0,
                 Username = "Test",
-                PasswdHash = "1234"
+                PasswdHash = "1234",
+                AppRole = "user"
             };
         LoginUser lUser = new LoginUser(){
             Username = "Test",
@@ -90,13 +93,15 @@ public class UserServiceTests
             {
                 Id = 0,
                 Username = "Test",
-                PasswdHash = "1234"
+                PasswdHash = "1234",
+                AppRole = "user"
             },
             new User()
             {
                 Id = 1,
                 Username = "Test2",
-                PasswdHash = "1234"
+                PasswdHash = "1234",
+                AppRole = "user"
             }
         };
 
@@ -116,7 +121,8 @@ public class UserServiceTests
         User user = new User() {
                 Id = 0,
                 Username = "Test",
-                PasswdHash = "1234"
+                PasswdHash = "1234",
+                AppRole = "user"
             };
 
         _repository.Setup(x => x.RetrieveSingleUserById(0)).Returns(user);
@@ -137,21 +143,48 @@ public class UserServiceTests
     }
 
     [Fact]
-    public void CreateUser_ShouldBeOk()
+    public void CreateNormalUser_ShouldBeOk()
     {
         User u = new User(){
             Username = "test",
             Email = "test@test.com",
             PasswdHash = "1234",
-            AppRole = "1234",
+            AppRole = "user"
+        };
+        SignupUser s = new SignupUser(){
+            Username = "test",
+            Email = "test@test.com",
+            Password = "1234"
         };
         _repository.Setup(x => x.InsertUser(u));
 
-        User result = _service.CreateUser(u);
+        User result = _service.CreateNormalUser(s);
 
         Assert.Equal(u.Username, result.Username);
         Assert.Equal(u.Email, result.Email);
-        Assert.Equal(u.PasswdHash, result.PasswdHash);
+        Assert.Equal(u.AppRole, result.AppRole);
+    }
+
+[Fact]
+    public void CreateAdminUser_ShouldBeOk()
+    {
+        User u = new User(){
+            Username = "test",
+            Email = "test@test.com",
+            PasswdHash = "1234",
+            AppRole = "admin"
+        };
+        SignupUser s = new SignupUser(){
+            Username = "test",
+            Email = "test@test.com",
+            Password = "1234"
+        };
+        _repository.Setup(x => x.InsertUser(u));
+
+        User result = _service.CreateAdminUser(s);
+
+        Assert.Equal(u.Username, result.Username);
+        Assert.Equal(u.Email, result.Email);
         Assert.Equal(u.AppRole, result.AppRole);
     }
 
