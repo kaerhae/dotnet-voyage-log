@@ -6,20 +6,27 @@ namespace dotnet_voyage_log.Models;
 
 [Table("users")]
 public class User {
+
     [Key]
     public long Id { get;set; }
-    [Required]
     [Column("username")]
-    public string Username { get;set; }
+    public required string Username { get; set; }
     [Column("email")]
     public string? Email { get;set; }
     [Column("app_role")]
-    public string AppRole { get;set; }
+    public required string AppRole { get;set; }
     [JsonIgnore]
-    [Required]
     [Column("password_hash")]
     public string PasswdHash { get;set; }
     [Required]
     [Column("created_at")]
     public DateTime CreatedAt { get;set; }
+    public void CheckUser() {
+        if(this.Username == "" 
+        || this.PasswdHash == "" 
+        || this.Email == ""
+        || this.AppRole == "") {
+            throw new Exception("Malformatted user: One or more user field empty");
+        }
+    }
 }

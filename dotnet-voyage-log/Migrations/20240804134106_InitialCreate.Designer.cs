@@ -13,7 +13,7 @@ using dotnet_voyage_log.Context;
 namespace dotnet_voyage_log.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240730191346_InitialCreate")]
+    [Migration("20240804134106_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -62,6 +62,17 @@ namespace dotnet_voyage_log.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            AppRole = "admin",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "admin@localhost.com",
+                            PasswdHash = "$2a$11$BgvE3Upie2ztH3yd9v6aee6kaLU7mhvS/iWetH1MZICz6MRjvty/6",
+                            Username = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("dotnet_voyage_log.Models.Voyage", b =>

@@ -1,14 +1,35 @@
+using BCrypt.Net;
 using dotnet_voyage_log.Context;
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Models;
 using Newtonsoft.Json;
 
+
 namespace dotnet_voyage_log.Service;
 public class UserService : IUserService {
 
     private readonly IUserRepository _repository;
-    public UserService(IUserRepository repository) {
+    private readonly ITokenGenerator _generator;
+    private readonly IAuthentication _auth;
+    public UserService(IUserRepository repository, ITokenGenerator generator, IAuthentication auth) {
         _repository = repository;
+        _generator = generator;
+        _auth = auth;
+    }
+
+    public string LoginUser(LoginUser user) {
+        user.CheckLoginUser();
+        User isUser = _repository.RetrieveSingleUserByUsername(user.Username);
+        if (isUser == null) {
+            throw new Exception("User not found");
+        }
+
+        bool isCorrectPassword = _auth.IsValidPassword(isUser.PasswdHash, user.Password);
+        if (!isCorrectPassword) {
+            throw new Exception("Incorrect password");
+        }
+        
+        return _generator.GenerateToken(isUser);
     }
 
     public List<User> GetAll() {
@@ -31,16 +52,35 @@ public class UserService : IUserService {
         throw new Exception("User not found");
     }
 
-    public User CreateUser(User newUser) {
-        ValidateUserInput(newUser);
-        _repository.InsertUser(newUser);
-        return newUser;
-
+    public User CreateAdminUser(SignupUser newUser) {
+        User insertableUser = new User(){
+            Username = newUser.Username,
+            AppRole = "admin",
+            Email = newUser.Email,
+            PasswdHash = _auth.HashPassword(newUser.Password),
+        };
+        insertableUser.CheckUser();
+        _repository.InsertUser(insertableUser);
+        return insertableUser;
     }
+
+    public User CreateNormalUser(SignupUser newUser) {
+       User insertableUser = new User(){
+            Username = newUser.Username,
+            AppRole = "user",
+            Email = newUser.Email,
+            PasswdHash = _auth.HashPassword(newUser.Password),
+        };
+        insertableUser.CheckUser();
+        _repository.InsertUser(insertableUser);
+        return insertableUser;
+    }
+
+
 
     public User UpdateUser(long userId, User updatedUser)
     {
-        ValidateUserInput(updatedUser);
+        updatedUser.CheckUser();
         User oldRecord = _repository.RetrieveSingleUserById(userId);
         if(oldRecord != null) {
             UpdateFields(oldRecord, updatedUser);
@@ -60,15 +100,6 @@ public class UserService : IUserService {
         }
 
         throw new Exception("User not found");
-    }
-
-    private void ValidateUserInput(User newUser) {
-        if(newUser.Username == "") {
-            throw new Exception("Username missing");
-        }
-        if(newUser.PasswdHash == "") {
-            throw new Exception("Username missing");
-        }
     }
 
     private void UpdateFields(User oldRecord, User updatedUser) {

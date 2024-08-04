@@ -1,10 +1,12 @@
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_voyage_log.Controllers;
 
 [ApiController]
+[Authorize(Policy = "Admins")]
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
@@ -31,10 +33,10 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("")]
-    public IActionResult Post([FromBody] User newUser)
+    public IActionResult Post([FromBody] SignupUser newUser)
     {
-        User u = _service.CreateUser(newUser);
-        return Ok($"User {u.Username} successfully created");
+        User u = _service.CreateAdminUser(newUser);
+        return Ok($"Admin User {u.Username} successfully created");
     }
 
     [HttpPut("{id}")]

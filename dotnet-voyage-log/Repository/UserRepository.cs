@@ -7,10 +7,13 @@ namespace dotnet_voyage_log.Repository;
 public class UserRepository : IUserRepository
 {
     private DataContext _context;
+    private readonly ILogger<UserRepository> _logger;
 
-    public UserRepository(DataContext context)
+
+    public UserRepository(DataContext context, ILogger<UserRepository> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public List<User> RetrieveAllUsers() {
@@ -18,6 +21,7 @@ public class UserRepository : IUserRepository
             List<User> users = _context.Users.ToList();
             return users;
         } catch (Exception e) {
+             _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");
         }
     }
@@ -26,7 +30,17 @@ public class UserRepository : IUserRepository
         try {
             return _context.Users.Where(x => x.Id == id).First();
         } catch (Exception e) {
+            _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");
+        }
+    }
+
+    public User RetrieveSingleUserByUsername(string username) {
+        try {
+            return _context.Users.Where(x => x.Username == username).First();
+        } catch (Exception e) {
+            _logger.LogError($"Error: {e.Message}");
+            throw new Exception($"Internal server error");
         }
     }
 
@@ -35,6 +49,7 @@ public class UserRepository : IUserRepository
             _context.Users.Add(newUser);
             _context.SaveChanges();
         } catch (Exception e) {
+            _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");
         }
     }
@@ -44,6 +59,7 @@ public class UserRepository : IUserRepository
             _context.Users.Update(updatedUser);
             _context.SaveChanges();
         } catch (Exception e) {
+            _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");
         }
     }
@@ -53,6 +69,7 @@ public class UserRepository : IUserRepository
             _context.Users.Remove(user);
             _context.SaveChanges();
         } catch (Exception e) {
+            _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");
         }
     }
