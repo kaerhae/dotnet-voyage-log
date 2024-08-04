@@ -26,21 +26,9 @@ public class DataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>().Property(b => b.Id).UseIdentityAlwaysColumn();
-        modelBuilder
-            .Entity<User>()
-            .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("now()");         
-        modelBuilder
-            .Entity<Voyage>()
-            .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("now()");
-         modelBuilder
-            .Entity<Voyage>()
-            .Property(e => e.UpdatedAt)
-            .HasDefaultValueSql("now()");
-        modelBuilder.Entity<Voyage>().Property(b => b.Id).UseIdentityAlwaysColumn();
-
+        modelBuilder.Entity<User>()
+            .Property(b => b.Id)
+            .UseIdentityAlwaysColumn();
         modelBuilder
             .Entity<User>()
             .HasData(new User(){
@@ -50,6 +38,35 @@ public class DataContext : DbContext
                 PasswdHash = BC.HashPassword(_config.GetAdminPassword()),
                 AppRole = "admin"
             });
+        modelBuilder
+            .Entity<User>()
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("now()");         
+        modelBuilder
+            .Entity<Voyage>()
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("now()");
+        modelBuilder
+            .Entity<Voyage>()
+            .Property(b => b.Id)
+            .UseIdentityAlwaysColumn();
+
+        modelBuilder
+            .Entity<Country>()
+            .Property(b => b.Id)
+            .UseIdentityAlwaysColumn();
+
+        modelBuilder
+            .Entity<Region>()
+            .Property(b => b.Id)
+            .UseIdentityAlwaysColumn();
+
+        modelBuilder
+            .Entity<Country>()
+            .HasMany(e => e.Regions)
+            .WithOne(e => e.Country)
+            .HasForeignKey(e => e.CountryId);
+
     }
 
     public DbSet<User> Users { get; set; }

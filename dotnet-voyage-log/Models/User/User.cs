@@ -8,6 +8,7 @@ namespace dotnet_voyage_log.Models;
 public class User {
 
     [Key]
+    [Column("user_id")]
     public long Id { get;set; }
     [Column("username")]
     public required string Username { get; set; }

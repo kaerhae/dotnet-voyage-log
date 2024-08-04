@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using dotnet_voyage_log.Context;
@@ -12,9 +13,11 @@ using dotnet_voyage_log.Context;
 namespace dotnet_voyage_log.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240804215137_LocationVoyageCreate")]
+    partial class LocationVoyageCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,7 +48,7 @@ namespace dotnet_voyage_log.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("cities", (string)null);
+                    b.ToTable("cities");
                 });
 
             modelBuilder.Entity("dotnet_voyage_log.Models.Country", b =>
@@ -64,7 +67,7 @@ namespace dotnet_voyage_log.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("countries", (string)null);
+                    b.ToTable("countries");
                 });
 
             modelBuilder.Entity("dotnet_voyage_log.Models.Region", b =>
@@ -89,7 +92,7 @@ namespace dotnet_voyage_log.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("regions", (string)null);
+                    b.ToTable("regions");
                 });
 
             modelBuilder.Entity("dotnet_voyage_log.Models.User", b =>
@@ -128,7 +131,7 @@ namespace dotnet_voyage_log.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("users");
 
                     b.HasData(
                         new
@@ -196,7 +199,7 @@ namespace dotnet_voyage_log.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("voyages", (string)null);
+                    b.ToTable("voyages");
                 });
 
             modelBuilder.Entity("dotnet_voyage_log.Models.City", b =>
