@@ -52,16 +52,35 @@ public class UserService : IUserService {
         throw new Exception("User not found");
     }
 
-    public User CreateUser(User newUser) {
-        ValidateUserInput(newUser);
-        _repository.InsertUser(newUser);
-        return newUser;
-
+    public User CreateAdminUser(SignupUser newUser) {
+        User insertableUser = new User(){
+            Username = newUser.Username,
+            AppRole = "admin",
+            Email = newUser.Email,
+            PasswdHash = _auth.HashPassword(newUser.Password),
+        };
+        insertableUser.CheckUser();
+        _repository.InsertUser(insertableUser);
+        return insertableUser;
     }
+
+    public User CreateNormalUser(SignupUser newUser) {
+       User insertableUser = new User(){
+            Username = newUser.Username,
+            AppRole = "user",
+            Email = newUser.Email,
+            PasswdHash = _auth.HashPassword(newUser.Password),
+        };
+        insertableUser.CheckUser();
+        _repository.InsertUser(insertableUser);
+        return insertableUser;
+    }
+
+
 
     public User UpdateUser(long userId, User updatedUser)
     {
-        ValidateUserInput(updatedUser);
+        updatedUser.CheckUser();
         User oldRecord = _repository.RetrieveSingleUserById(userId);
         if(oldRecord != null) {
             UpdateFields(oldRecord, updatedUser);
@@ -81,15 +100,6 @@ public class UserService : IUserService {
         }
 
         throw new Exception("User not found");
-    }
-
-    private void ValidateUserInput(User newUser) {
-        if(newUser.Username == "") {
-            throw new Exception("Username missing");
-        }
-        if(newUser.PasswdHash == "") {
-            throw new Exception("Username missing");
-        }
     }
 
     private void UpdateFields(User oldRecord, User updatedUser) {

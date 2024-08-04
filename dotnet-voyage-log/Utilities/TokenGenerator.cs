@@ -33,13 +33,13 @@ public class TokenGenerator : ITokenGenerator
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Role, user.AppRole)
                 ]),
-            Expires = DateTime.UtcNow.AddDays(7),
+            Issuer = _config.GetIssuer(),
+            Expires = DateTime.UtcNow.AddDays(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-            Audience = user.AppRole
+            Audience = _config.GetAudience()
         };
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
 
-   
 }

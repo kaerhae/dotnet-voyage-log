@@ -7,13 +7,13 @@ namespace dotnet_voyage_log.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class LoginController : ControllerBase
+public class SignUpController : ControllerBase
 {
 
     private readonly ILogger<LoginController> _logger;
     private readonly IUserService _service;
 
-    public LoginController(ILogger<LoginController> logger, IUserService service)
+    public SignUpController(ILogger<LoginController> logger, IUserService service)
     {
         _logger = logger;
         _service = service;
@@ -21,10 +21,10 @@ public class LoginController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("")]
-    public IActionResult Post([FromBody] LoginUser user)
+    public IActionResult Post([FromBody] SignupUser user)
     {
-        string token = _service.LoginUser(user);
-        return Ok(token); 
+        User u = _service.CreateNormalUser(user);
+        return Ok($"User {u.Username} successfully created");
     }
 
 }

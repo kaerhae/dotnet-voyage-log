@@ -1,14 +1,17 @@
+using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Models;
 using dotnet_voyage_log.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
+using BC = BCrypt.Net.BCrypt;
+
 namespace dotnet_voyage_log.Context;
 public class DataContext : DbContext
 {
-    protected readonly Configs _config;
+    protected readonly IConfigs _config;
 
-    public DataContext(Configs configuration)
+    public DataContext(IConfigs configuration)
     {
         _config = configuration;
     }
@@ -37,6 +40,16 @@ public class DataContext : DbContext
             .Property(e => e.UpdatedAt)
             .HasDefaultValueSql("now()");
         modelBuilder.Entity<Voyage>().Property(b => b.Id).UseIdentityAlwaysColumn();
+
+        modelBuilder
+            .Entity<User>()
+            .HasData(new User(){
+                Id = 1,
+                Username = _config.GetAdminUsername(),
+                Email = _config.GetAdminEmail(),
+                PasswdHash = BC.HashPassword(_config.GetAdminPassword()),
+                AppRole = "admin"
+            });
     }
 
     public DbSet<User> Users { get; set; }

@@ -50,6 +50,11 @@ namespace dotnet_voyage_log.Migrations
                 {
                     table.PrimaryKey("PK_voyages", x => x.Id);
                 });
+
+            migrationBuilder.InsertData(
+                table: "users",
+                columns: new[] { "Id", "app_role", "email", "password_hash", "username" },
+                values: new object[] { 1L, "admin", "admin@localhost.com", "$2a$11$BgvE3Upie2ztH3yd9v6aee6kaLU7mhvS/iWetH1MZICz6MRjvty/6", "Admin" });
         }
 
         /// <inheritdoc />
