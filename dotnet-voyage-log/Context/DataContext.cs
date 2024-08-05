@@ -1,6 +1,5 @@
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Models;
-using dotnet_voyage_log.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -29,7 +28,8 @@ public class DataContext : DbContext
     {
         modelBuilder.Entity<User>()
             .Property(b => b.Id)
-            .UseIdentityAlwaysColumn();
+            .UseIdentityAlwaysColumn()
+            .HasIdentityOptions(startValue: 100);
         modelBuilder
             .Entity<User>()
             .HasData(new User(){
@@ -50,17 +50,20 @@ public class DataContext : DbContext
         modelBuilder
             .Entity<Voyage>()
             .Property(b => b.Id)
-            .UseIdentityAlwaysColumn();
+            .UseIdentityAlwaysColumn()
+            .HasIdentityOptions(startValue: 100);
 
         modelBuilder
             .Entity<Country>()
             .Property(b => b.Id)
-            .UseIdentityAlwaysColumn();
+            .UseIdentityAlwaysColumn()
+            .HasIdentityOptions(startValue: 100);
 
         modelBuilder
             .Entity<Region>()
             .Property(b => b.Id)
-            .UseIdentityAlwaysColumn();
+            .UseIdentityAlwaysColumn()
+            .HasIdentityOptions(startValue: 100);
 
         modelBuilder
             .Entity<Country>()
@@ -74,11 +77,6 @@ public class DataContext : DbContext
             .HasForeignKey(x => x.CountryId);
 
         modelBuilder
-            .Entity<Country>()
-            .HasMany(x => x.Voyages)
-            .WithOne(x => x.Country)
-            .HasForeignKey(x => x.CountryId);
-        modelBuilder
             .Entity<Region>()
             .HasMany(x => x.Voyages)
             .WithOne(x => x.Region)
@@ -86,15 +84,21 @@ public class DataContext : DbContext
 
         modelBuilder
             .Entity<Voyage>()
-            .HasOne(x => x.Country)
-            .WithMany(x => x.Voyages)
-            .HasForeignKey(x => x.CountryId);
-
-        modelBuilder
-            .Entity<Voyage>()
             .HasOne(x => x.Region)
             .WithMany(x => x.Voyages)
             .HasForeignKey(x => x.RegionId);
+
+        modelBuilder
+            .Entity<User>()
+            .HasMany(x => x.Voyages)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId);
+
+        modelBuilder
+            .Entity<Voyage>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.Voyages)
+            .HasForeignKey(x => x.UserId);
 
     }
 

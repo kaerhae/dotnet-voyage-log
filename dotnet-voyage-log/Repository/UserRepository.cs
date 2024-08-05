@@ -18,8 +18,25 @@ public class UserRepository : IUserRepository
 
     public List<User> RetrieveAllUsers() {
         try {
-            List<User> users = _context.Users.ToList();
-            return users;
+            return _context.Users.Select(u => new User{
+            Id = u.Id,
+            Username = u.Username,
+            AppRole = u.AppRole,
+            Voyages = u.Voyages
+                    .Select(v => new Voyage{
+                        Id = v.Id,
+                        Topic = v.Topic,
+                        Description = v.Description,
+                        Notes = v.Notes,
+                        Images = v.Images,
+                        CreatedAt = v.CreatedAt,
+                        UpdatedAt = v.UpdatedAt,
+                        LocationLatitude = v.LocationLatitude,
+                        LocationLongitude = v.LocationLongitude,
+                        RegionId = v.RegionId,
+                        }).ToList()
+
+        }).ToList();
         } catch (Exception e) {
              _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");

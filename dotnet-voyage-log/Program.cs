@@ -22,6 +22,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<IVoyageService, VoyageService>();
+builder.Services.AddScoped<IVoyageRepository, VoyageRepository>();
 builder.Services.AddSingleton<DataContext>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddSingleton<IConfigs, Configs>();

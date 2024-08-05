@@ -94,7 +94,7 @@ namespace dotnet_voyage_log.Migrations
                 table: "regions",
                 column: "country_fk");
 
-             var sqlCountryFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SQL/bulk-insert-countries.sql");
+            var sqlCountryFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SQL/bulk-insert-countries.sql");
             var sqlCountry = File.ReadAllText(sqlCountryFilePath);
             migrationBuilder.Sql(sqlCountry);
 

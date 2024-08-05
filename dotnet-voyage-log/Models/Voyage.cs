@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace dotnet_voyage_log.Models;
 
@@ -25,10 +26,19 @@ public class Voyage {
     public double? LocationLongitude { get;set; }
     [Column("location_latitude")]
     public double? LocationLatitude { get;set; }
-    [Column("countryFK")]
-    public long CountryId { get; set; }
-    [Column("regionFK")]
+    [Column("region_fk")]
     public long RegionId { get; set; }
-    public Country Country { get;set; }
-    public Region Region { get; set; }
+    [JsonIgnore]
+    public Region? Region { get; set; }
+
+    [Column("user_fk")]
+    public long UserId {get;set;}
+    [JsonIgnore]
+    public User? User { get;set; }
+
+    public void CheckVoyage(){
+        if(this.Topic == "" || this.RegionId == 0 || this.UserId == 0 ){
+            throw new Exception("Malformatted voyage");
+        }
+    }
 }

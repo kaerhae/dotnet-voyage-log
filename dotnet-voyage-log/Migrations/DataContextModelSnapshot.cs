@@ -31,6 +31,7 @@ namespace dotnet_voyage_log.Migrations
                         .HasColumnName("country_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<long>("Id"), 100L, null, null, null, null, null);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -50,6 +51,7 @@ namespace dotnet_voyage_log.Migrations
                         .HasColumnName("region_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<long>("Id"), 100L, null, null, null, null, null);
 
                     b.Property<long>("CountryId")
                         .HasColumnType("bigint")
@@ -75,6 +77,7 @@ namespace dotnet_voyage_log.Migrations
                         .HasColumnName("user_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<long>("Id"), 100L, null, null, null, null, null);
 
                     b.Property<string>("AppRole")
                         .IsRequired()
@@ -112,7 +115,7 @@ namespace dotnet_voyage_log.Migrations
                             AppRole = "admin",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@localhost.com",
-                            PasswdHash = "$2a$11$WUd0Yk/7.J12./At/qCBLedBV2JJXAXx41BS59aTuyZOD89eJDXt2",
+                            PasswdHash = "$2a$11$pIoxpmYk4ali4lKjigYFs.4/ss5h1dMZGeOuCwcIi75oeCeKrQaUC",
                             Username = "Admin"
                         });
                 });
@@ -125,10 +128,7 @@ namespace dotnet_voyage_log.Migrations
                         .HasColumnName("voyage_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CountryId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("countryFK");
+                    NpgsqlPropertyBuilderExtensions.HasIdentityOptions(b.Property<long>("Id"), 100L, null, null, null, null, null);
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -158,7 +158,7 @@ namespace dotnet_voyage_log.Migrations
 
                     b.Property<long>("RegionId")
                         .HasColumnType("bigint")
-                        .HasColumnName("regionFK");
+                        .HasColumnName("region_fk");
 
                     b.Property<string>("Topic")
                         .IsRequired()
@@ -169,11 +169,15 @@ namespace dotnet_voyage_log.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_fk");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CountryId");
-
                     b.HasIndex("RegionId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("voyages");
                 });
@@ -191,31 +195,34 @@ namespace dotnet_voyage_log.Migrations
 
             modelBuilder.Entity("dotnet_voyage_log.Models.Voyage", b =>
                 {
-                    b.HasOne("dotnet_voyage_log.Models.Country", "Country")
-                        .WithMany("Voyages")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("dotnet_voyage_log.Models.Region", "Region")
                         .WithMany("Voyages")
                         .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Country");
+                    b.HasOne("dotnet_voyage_log.Models.User", "User")
+                        .WithMany("Voyages")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Region");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("dotnet_voyage_log.Models.Country", b =>
                 {
                     b.Navigation("Regions");
-
-                    b.Navigation("Voyages");
                 });
 
             modelBuilder.Entity("dotnet_voyage_log.Models.Region", b =>
+                {
+                    b.Navigation("Voyages");
+                });
+
+            modelBuilder.Entity("dotnet_voyage_log.Models.User", b =>
                 {
                     b.Navigation("Voyages");
                 });
