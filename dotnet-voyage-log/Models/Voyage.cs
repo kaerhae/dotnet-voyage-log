@@ -6,6 +6,7 @@ namespace dotnet_voyage_log.Models;
 [Table("voyages")]
 public class Voyage {
     [Key]
+    [Column("voyage_id")]
     public long Id { get;set; }
     [Required]
     [Column("topic")]
@@ -14,8 +15,6 @@ public class Voyage {
     public string? Description { get;set; }
     [Column("notes")]
     public string? Notes { get;set; }
-    [Column("location")]
-    public string Location { get;set; }
     [Column("images")]
     public List<string>? Images { get;set; }
     [Column("created_at")]
@@ -26,4 +25,10 @@ public class Voyage {
     public double? LocationLongitude { get;set; }
     [Column("location_latitude")]
     public double? LocationLatitude { get;set; }
+    [Column("countryFK")]
+    [ForeignKey("City")]
+    public long CountryId { get; set; }
+    [Column("regionFK")]
+    [ForeignKey("Region")]
+    public long RegionId { get; set; }
 }

@@ -26,21 +26,9 @@ public class DataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>().Property(b => b.Id).UseIdentityAlwaysColumn();
-        modelBuilder
-            .Entity<User>()
-            .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("now()");         
-        modelBuilder
-            .Entity<Voyage>()
-            .Property(e => e.CreatedAt)
-            .HasDefaultValueSql("now()");
-         modelBuilder
-            .Entity<Voyage>()
-            .Property(e => e.UpdatedAt)
-            .HasDefaultValueSql("now()");
-        modelBuilder.Entity<Voyage>().Property(b => b.Id).UseIdentityAlwaysColumn();
-
+        modelBuilder.Entity<User>()
+            .Property(b => b.Id)
+            .UseIdentityAlwaysColumn();
         modelBuilder
             .Entity<User>()
             .HasData(new User(){
@@ -50,8 +38,44 @@ public class DataContext : DbContext
                 PasswdHash = BC.HashPassword(_config.GetAdminPassword()),
                 AppRole = "admin"
             });
+        modelBuilder
+            .Entity<User>()
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("now()");         
+        modelBuilder
+            .Entity<Voyage>()
+            .Property(e => e.CreatedAt)
+            .HasDefaultValueSql("now()");
+        modelBuilder
+            .Entity<Voyage>()
+            .Property(b => b.Id)
+            .UseIdentityAlwaysColumn();
+
+        modelBuilder
+            .Entity<Country>()
+            .Property(b => b.Id)
+            .UseIdentityAlwaysColumn();
+
+        modelBuilder
+            .Entity<Region>()
+            .Property(b => b.Id)
+            .UseIdentityAlwaysColumn();
+
+        modelBuilder
+            .Entity<Country>()
+            .HasMany(x => x.Regions)
+            .WithOne(x => x.Country)
+            .HasForeignKey(x => x.CountryId);
+        modelBuilder
+            .Entity<Region>()
+            .HasOne(x => x.Country)
+            .WithMany(x => x.Regions)
+            .HasForeignKey(x => x.CountryId);
+
     }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Voyage> Voyages { get;set; }
+    public DbSet<Country> Countries { get; set; }
+    public DbSet<Region> Regions { get;set; }
 }
