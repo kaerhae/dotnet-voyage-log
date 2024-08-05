@@ -11,6 +11,6 @@ public class Country {
     [Column("country_name")]
     public required string Name { get; set; }
     [Column("regions")]
-    public List<Region> Regions { get;set; }
+    public List<Region> Regions { get; set; }
 
 }

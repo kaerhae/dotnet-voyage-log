@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace dotnet_voyage_log.Models;
 
@@ -10,10 +11,9 @@ public class Region {
     public long Id { get; set; }
     [Column("region_name")]
     public required string Name { get; set; }
-    [Column("country")]
-    public Country Country {get;set;}
-    [ForeignKey("Country")]
     [Column("country_fk")]
     public long CountryId { get;set; }
+    [JsonIgnore]
+     public Country Country { get; set; } = null!; 
 
 }

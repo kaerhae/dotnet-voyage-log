@@ -63,12 +63,19 @@ public class DataContext : DbContext
 
         modelBuilder
             .Entity<Country>()
-            .HasMany(e => e.Regions)
-            .WithOne(e => e.Country)
-            .HasForeignKey(e => e.CountryId);
+            .HasMany(x => x.Regions)
+            .WithOne(x => x.Country)
+            .HasForeignKey(x => x.CountryId);
+        modelBuilder
+            .Entity<Region>()
+            .HasOne(x => x.Country)
+            .WithMany(x => x.Regions)
+            .HasForeignKey(x => x.CountryId);
 
     }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Voyage> Voyages { get;set; }
+    public DbSet<Country> Countries { get; set; }
+    public DbSet<Region> Regions { get;set; }
 }

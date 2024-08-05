@@ -20,6 +20,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 builder.Services.AddSingleton<DataContext>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddSingleton<IConfigs, Configs>();

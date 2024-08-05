@@ -13,8 +13,8 @@ using dotnet_voyage_log.Context;
 namespace dotnet_voyage_log.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240804215137_LocationVoyageCreate")]
-    partial class LocationVoyageCreate
+    [Migration("20240805123422_LocationCreate")]
+    partial class LocationCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,31 +25,6 @@ namespace dotnet_voyage_log.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("dotnet_voyage_log.Models.City", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("city_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("city_name");
-
-                    b.Property<long>("RegionId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("region_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RegionId");
-
-                    b.ToTable("cities");
-                });
 
             modelBuilder.Entity("dotnet_voyage_log.Models.Country", b =>
                 {
@@ -140,7 +115,7 @@ namespace dotnet_voyage_log.Migrations
                             AppRole = "admin",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@localhost.com",
-                            PasswdHash = "$2a$11$eE6uV/eo6SovI/L2fIVYZewKjrd84u7GvmlZIJR7vI39za/LvaSum",
+                            PasswdHash = "$2a$11$LWhhkffnmPNLGTuz4FZ3WettPfsVrsJm9LxkhtFZqRjusAm4BjdxW",
                             Username = "Admin"
                         });
                 });
@@ -202,17 +177,6 @@ namespace dotnet_voyage_log.Migrations
                     b.ToTable("voyages");
                 });
 
-            modelBuilder.Entity("dotnet_voyage_log.Models.City", b =>
-                {
-                    b.HasOne("dotnet_voyage_log.Models.Region", "Region")
-                        .WithMany("Cities")
-                        .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Region");
-                });
-
             modelBuilder.Entity("dotnet_voyage_log.Models.Region", b =>
                 {
                     b.HasOne("dotnet_voyage_log.Models.Country", "Country")
@@ -227,11 +191,6 @@ namespace dotnet_voyage_log.Migrations
             modelBuilder.Entity("dotnet_voyage_log.Models.Country", b =>
                 {
                     b.Navigation("Regions");
-                });
-
-            modelBuilder.Entity("dotnet_voyage_log.Models.Region", b =>
-                {
-                    b.Navigation("Cities");
                 });
 #pragma warning restore 612, 618
         }
