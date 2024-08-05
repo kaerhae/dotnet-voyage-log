@@ -22,6 +22,7 @@ public class DataContext : DbContext
         // connect to postgres with connection string from app settings
         options
             .UseNpgsql(_config.GetConnectionString());
+
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -71,6 +72,29 @@ public class DataContext : DbContext
             .HasOne(x => x.Country)
             .WithMany(x => x.Regions)
             .HasForeignKey(x => x.CountryId);
+
+        modelBuilder
+            .Entity<Country>()
+            .HasMany(x => x.Voyages)
+            .WithOne(x => x.Country)
+            .HasForeignKey(x => x.CountryId);
+        modelBuilder
+            .Entity<Region>()
+            .HasMany(x => x.Voyages)
+            .WithOne(x => x.Region)
+            .HasForeignKey(x => x.RegionId);
+
+        modelBuilder
+            .Entity<Voyage>()
+            .HasOne(x => x.Country)
+            .WithMany(x => x.Voyages)
+            .HasForeignKey(x => x.CountryId);
+
+        modelBuilder
+            .Entity<Voyage>()
+            .HasOne(x => x.Region)
+            .WithMany(x => x.Voyages)
+            .HasForeignKey(x => x.RegionId);
 
     }
 

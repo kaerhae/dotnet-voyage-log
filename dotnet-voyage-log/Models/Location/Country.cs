@@ -10,7 +10,7 @@ public class Country {
     public long Id { get; set; }
     [Column("country_name")]
     public required string Name { get; set; }
-    [Column("regions")]
     public List<Region> Regions { get; set; }
+    public List<Voyage> Voyages { get;set;}
 
 }

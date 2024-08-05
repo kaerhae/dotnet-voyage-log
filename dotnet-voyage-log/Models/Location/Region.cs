@@ -15,5 +15,6 @@ public class Region {
     public long CountryId { get;set; }
     [JsonIgnore]
      public Country Country { get; set; } = null!; 
+    public List<Voyage> Voyages { get;set;}
 
 }

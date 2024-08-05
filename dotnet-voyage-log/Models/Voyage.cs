@@ -26,9 +26,9 @@ public class Voyage {
     [Column("location_latitude")]
     public double? LocationLatitude { get;set; }
     [Column("countryFK")]
-    [ForeignKey("City")]
     public long CountryId { get; set; }
     [Column("regionFK")]
-    [ForeignKey("Region")]
     public long RegionId { get; set; }
+    public Country Country { get;set; }
+    public Region Region { get; set; }
 }
