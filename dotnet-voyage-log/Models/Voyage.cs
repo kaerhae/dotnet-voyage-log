@@ -11,7 +11,7 @@ public class Voyage {
     public long Id { get;set; }
     [Required]
     [Column("topic")]
-    public string Topic { get;set; }
+    public required string Topic { get;set; }
     [Column("description")]
     public string? Description { get;set; }
     [Column("notes")]

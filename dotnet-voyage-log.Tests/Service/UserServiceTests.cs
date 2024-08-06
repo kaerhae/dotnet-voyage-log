@@ -1,7 +1,9 @@
 
+using Castle.Core.Logging;
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Models;
 using dotnet_voyage_log.Service;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace dotnet_voyage_log.Tests.Service;
@@ -13,13 +15,15 @@ public class UserServiceTests
     private Mock<IUserRepository> _repository;
     private Mock<ITokenGenerator> _generator;
     private Mock<IAuthentication> _auth;
+    private Mock<ILogger<IUserService>> _logger;
 
     public UserServiceTests()
     {
         _repository = new Mock<IUserRepository>();
         _generator = new Mock<ITokenGenerator>();
         _auth = new Mock<IAuthentication>();
-        _service = new UserService(_repository.Object, _generator.Object, _auth.Object);
+        _logger = new Mock<ILogger<IUserService>>();
+        _service = new UserService(_repository.Object, _generator.Object, _auth.Object, _logger.Object);
     }
 
     [Fact]
@@ -58,7 +62,7 @@ public class UserServiceTests
             Username = "Test",
             Password = "1234"
         };
-        _repository.Setup(x => x.RetrieveSingleUserByUsername(lUser.Username)).Returns((User)null);
+        _repository.Setup(x => x.RetrieveSingleUserByUsername(lUser.Username)).Returns(null as User);
 
         var exception = Assert.Throws<Exception>(() => _service.LoginUser(lUser));
         Assert.Equal("User not found", exception.Message);
@@ -136,7 +140,7 @@ public class UserServiceTests
     [Fact]
     public void GetById_ShouldThrowException()
     {
-        _repository.Setup(x => x.RetrieveSingleUserById(0)).Returns((User)null);
+        _repository.Setup(x => x.RetrieveSingleUserById(0)).Returns(null as User);
 
         var exception = Assert.Throws<Exception>(() => _service.GetById(0));
         Assert.Equal("User not found", exception.Message);
@@ -165,7 +169,7 @@ public class UserServiceTests
         Assert.Equal(u.AppRole, result.AppRole);
     }
 
-[Fact]
+    [Fact]
     public void CreateAdminUser_ShouldBeOk()
     {
         User u = new User(){
@@ -225,7 +229,7 @@ public class UserServiceTests
             AppRole = "updated"
         };
         _repository.Setup(x => x.UpdateAllFields(newUser));
-        _repository.Setup(x => x.RetrieveSingleUserById(0)).Returns((User)null);
+        _repository.Setup(x => x.RetrieveSingleUserById(0)).Returns(null as User);
         var exception = Assert.Throws<Exception>(() => _service.UpdateUser(0, newUser));
         Assert.Equal("User not found", exception.Message);
     }
@@ -261,7 +265,7 @@ public class UserServiceTests
             AppRole = "updated"
         };
         _repository.Setup(x => x.DeleteUser(user));
-        _repository.Setup(x => x.RetrieveSingleUserById(0)).Returns((User)null);
+        _repository.Setup(x => x.RetrieveSingleUserById(0)).Returns(null as User);
         var exception = Assert.Throws<Exception>(() => _service.DeleteUser(0));
         Assert.Equal("User not found", exception.Message);
     }

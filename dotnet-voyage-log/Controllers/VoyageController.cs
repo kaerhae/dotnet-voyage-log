@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace dotnet_voyage_log.Controllers;
 
 [ApiController]
+[Authorize(Policy = "AllUsers")]
 [Route("[controller]")]
 public class VoyageController : ControllerBase
 {
@@ -31,7 +32,6 @@ public class VoyageController : ControllerBase
         return Ok(new { message = "Voyage created" });
     }
 
-    [Authorize(Policy = "Users")]
     [HttpPut("{id}")]
     public IActionResult Update(long id, [FromBody] Voyage updatedVoyage) {
         string userId = GetUserId();
@@ -39,7 +39,6 @@ public class VoyageController : ControllerBase
         return Ok(new { message = "Voyage updated"});
     }
 
-    [Authorize(Policy = "Users")]
     [HttpDelete("{id}")]
     public IActionResult Delete(long id) {
         string userId = GetUserId();

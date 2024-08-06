@@ -1,16 +1,20 @@
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Models;
+using Newtonsoft.Json;
 
 namespace dotnet_voyage_log.Service;
 
 public class VoyageService : IVoyageService
 {
     private IVoyageRepository _repository;
-    private IUserRepository _userRepository;
+    private ILogger<IVoyageService> _logger;
 
-    public VoyageService(IVoyageRepository repository, IUserRepository userRepository){
+    private IAuthentication _auth;
+
+    public VoyageService(IVoyageRepository repository, IAuthentication auth, ILogger<IVoyageService> logger){
         _repository = repository;
-        _userRepository = userRepository;
+        _auth = auth;
+        _logger = logger;
     }
 
     public List<Voyage> GetAll()
@@ -32,7 +36,7 @@ public class VoyageService : IVoyageService
         if (oldRecord == null) {
             throw new Exception("Voyage not found");
         }
-        bool isOwner = IsOwner(userId, oldRecord);
+        bool isOwner = _auth.IsOwner(userId, oldRecord);
         if (!isOwner) {
             throw new UnauthorizedAccessException();
         }
@@ -41,6 +45,7 @@ public class VoyageService : IVoyageService
         try{
             _repository.UpdateVoyage(updatedVoyage);
         } catch (Exception e) {
+            _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");
         }
     }
@@ -52,7 +57,9 @@ public class VoyageService : IVoyageService
         if (record == null) {
             throw new Exception("Voyage not found");
         }
-        bool isOwner = IsOwner(userId, record);
+        bool isOwner = _auth.IsOwner(userId, record);
+        System.Diagnostics.Debug.WriteLine(userId);
+        System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(record, Formatting.Indented));
         if (!isOwner) {
             throw new UnauthorizedAccessException();
         }
@@ -60,6 +67,7 @@ public class VoyageService : IVoyageService
         try {
             _repository.DeleteVoyage(record);
         } catch (Exception e) {
+            _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");
         }
     }
@@ -74,17 +82,6 @@ public class VoyageService : IVoyageService
 
     }
 
-    private bool IsOwner(long userId, Voyage voyage) {
-        User user = _userRepository.RetrieveSingleUserById(userId);
-        if (user.AppRole == "admin") {
-            return true;
-        }
-        if (voyage.UserId == user.Id) {
-            return true;
-        }
-
-        return false;
-    }
 
    
 }

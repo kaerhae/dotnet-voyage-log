@@ -43,18 +43,18 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public User RetrieveSingleUserById(long id) {
+    public User? RetrieveSingleUserById(long id) {
         try {
-            return _context.Users.Where(x => x.Id == id).First();
+            return _context.Users.Where(x => x.Id == id).FirstOrDefault();
         } catch (Exception e) {
             _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");
         }
     }
 
-    public User RetrieveSingleUserByUsername(string username) {
+    public User? RetrieveSingleUserByUsername(string username) {
         try {
-            return _context.Users.Where(x => x.Username == username).First();
+            return _context.Users.Where(x => x.Username == username).FirstOrDefault();
         } catch (Exception e) {
             _logger.LogError($"Error: {e.Message}");
             throw new Exception($"Internal server error");
