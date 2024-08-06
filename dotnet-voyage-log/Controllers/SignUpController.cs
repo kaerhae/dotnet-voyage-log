@@ -24,7 +24,7 @@ public class SignUpController : ControllerBase
     public IActionResult Post([FromBody] SignupUser user)
     {
         User u = _service.CreateNormalUser(user);
-        return Ok($"User {u.Username} successfully created");
+        return Ok(new { message = $"User {u.Username} successfully created" });
     }
 
 }

@@ -13,7 +13,7 @@ public class Region {
     public required string Name { get; set; }
     [Column("country_fk")]
     public long CountryId { get;set; }
-    [JsonIgnore]
-     public Country Country { get; set; } = null!; 
+    public Country? Country { get; set; } = null!; 
+    public ICollection<Voyage> Voyages { get; set; }
 
 }

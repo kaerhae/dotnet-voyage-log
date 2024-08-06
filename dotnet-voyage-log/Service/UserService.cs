@@ -8,18 +8,20 @@ using Newtonsoft.Json;
 namespace dotnet_voyage_log.Service;
 public class UserService : IUserService {
 
+    private readonly ILogger<IUserService> _logger;
     private readonly IUserRepository _repository;
     private readonly ITokenGenerator _generator;
     private readonly IAuthentication _auth;
-    public UserService(IUserRepository repository, ITokenGenerator generator, IAuthentication auth) {
+    public UserService(IUserRepository repository, ITokenGenerator generator, IAuthentication auth, ILogger<IUserService> logger) {
         _repository = repository;
         _generator = generator;
         _auth = auth;
+        _logger = logger;
     }
 
     public string LoginUser(LoginUser user) {
         user.CheckLoginUser();
-        User isUser = _repository.RetrieveSingleUserByUsername(user.Username);
+        User? isUser = _repository.RetrieveSingleUserByUsername(user.Username);
         if (isUser == null) {
             throw new Exception("User not found");
         }
@@ -36,15 +38,13 @@ public class UserService : IUserService {
         try {
             return _repository.RetrieveAllUsers();
         } catch (Exception e) {
-            System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(e, Formatting.Indented));
-            Console.WriteLine(JsonConvert.SerializeObject(e, Formatting.Indented));
-
+            _logger.LogError($"Error: {e.Message}");
             throw new Exception("Error on fetching all users");
         }
     }
 
     public User GetById(long id) {
-        User user = _repository.RetrieveSingleUserById(id);
+        User? user = _repository.RetrieveSingleUserById(id);
         if (user != null) {
             return user;
         }
@@ -81,7 +81,7 @@ public class UserService : IUserService {
     public User UpdateUser(long userId, User updatedUser)
     {
         updatedUser.CheckUser();
-        User oldRecord = _repository.RetrieveSingleUserById(userId);
+        User? oldRecord = _repository.RetrieveSingleUserById(userId);
         if(oldRecord != null) {
             UpdateFields(oldRecord, updatedUser);
             _repository.UpdateAllFields(oldRecord);
@@ -93,7 +93,7 @@ public class UserService : IUserService {
 
     public User DeleteUser(long userId) 
     {
-        User user = _repository.RetrieveSingleUserById(userId);
+        User? user = _repository.RetrieveSingleUserById(userId);
         if (user != null) {
             _repository.DeleteUser(user);
             return user;

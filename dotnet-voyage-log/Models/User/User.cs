@@ -22,6 +22,9 @@ public class User {
     [Required]
     [Column("created_at")]
     public DateTime CreatedAt { get;set; }
+
+    public ICollection<Voyage> Voyages { get; set; }
+
     public void CheckUser() {
         if(this.Username == "" 
         || this.PasswdHash == "" 

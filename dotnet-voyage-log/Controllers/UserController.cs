@@ -36,20 +36,20 @@ public class UserController : ControllerBase
     public IActionResult Post([FromBody] SignupUser newUser)
     {
         User u = _service.CreateAdminUser(newUser);
-        return Ok($"Admin User {u.Username} successfully created");
+        return Ok(new { message = $"Admin User {u.Username} successfully created"}) ;
     }
 
     [HttpPut("{id}")]
     public IActionResult Update(long id, [FromBody] User updatedUser) 
     {
         _service.UpdateUser(id, updatedUser);
-        return Ok("User successfully updated");
+        return Ok( new { message = "User successfully updated" });
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(long id)
     {
         _service.DeleteUser(id);
-        return Ok("User succesfully updated");
+        return Ok(new { message = "User succesfully updated" });
     }
 }

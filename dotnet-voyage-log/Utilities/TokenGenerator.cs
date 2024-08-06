@@ -1,13 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Models;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 
 namespace dotnet_voyage_log.Utilities;
 

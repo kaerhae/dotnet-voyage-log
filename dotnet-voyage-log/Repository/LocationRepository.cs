@@ -39,7 +39,17 @@ public class LocationRepository : ILocationRepository
     public List<Region> GetAllRegions()
     {
         try {
-            return _context.Regions.ToList();
+            return _context.Regions.Select(x => new Region {
+                Id = x.Id,
+                Name = x.Name,
+                CountryId = x.CountryId,
+                Country = _context.Countries
+                    .Where(c => c.Id == x.CountryId)
+                    .Select(c => new Country{
+                        Id = c.Id,
+                        Name = c.Name
+                    }).FirstOrDefault()
+            }).ToList();
         } catch (Exception e) {
             _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");
@@ -55,7 +65,7 @@ public class LocationRepository : ILocationRepository
                 Regions = c.Regions.Select(r => new Region(){
                     Id = r.Id,
                     Name = r.Name,
-                    CountryId = r.CountryId
+                    CountryId = r.CountryId,
                 }).ToList()
             }).FirstOrDefault();
         } catch (Exception e) {
@@ -67,7 +77,29 @@ public class LocationRepository : ILocationRepository
     public Region? GetSingleRegion(string name)
     {
         try {
-            return _context.Regions.Where(x => x.Name.ToLower() == name.ToLower()).FirstOrDefault();
+            return _context.Regions.Where(x => x.Name.ToLower() == name.ToLower()).Select(x => new Region {
+                Id = x.Id,
+                Name = x.Name,
+                CountryId = x.CountryId,
+                Country = _context.Countries
+                    .Where(c => c.Id == x.CountryId).Select(c => new Country{
+                        Id = c.Id,
+                        Name = c.Name
+                    }).FirstOrDefault(),
+                Voyages = x.Voyages
+                    .Select(v => new Voyage{
+                        Id = v.Id,
+                        Topic = v.Topic,
+                        Description = v.Description,
+                        Notes = v.Notes,
+                        Images = v.Images,
+                        CreatedAt = v.CreatedAt,
+                        UpdatedAt = v.UpdatedAt,
+                        LocationLatitude = v.LocationLatitude,
+                        LocationLongitude = v.LocationLongitude,
+                        RegionId = v.RegionId,
+                        }).ToList()
+            }).FirstOrDefault();
         } catch (Exception e) {
             _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");

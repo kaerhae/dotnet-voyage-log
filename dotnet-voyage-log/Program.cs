@@ -22,6 +22,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<IVoyageService, VoyageService>();
+builder.Services.AddScoped<IVoyageRepository, VoyageRepository>();
 builder.Services.AddSingleton<DataContext>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddSingleton<IConfigs, Configs>();
@@ -32,13 +34,13 @@ builder.Services
     .AddAuthentication("Bearer")
     .AddJwtBearer(options => 
     {    
-        var key = builder.Configuration["JwtSettings:SecretKey"] ?? Environment.GetEnvironmentVariable("SECRET_KEY");
+        string? key = builder.Configuration["JwtSettings:SecretKey"] ?? Environment.GetEnvironmentVariable("SECRET_KEY");
 
         options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
                 {
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(key)),
+                        Encoding.UTF8.GetBytes(key ?? throw new Exception("Key is missing"))),
                     ValidateIssuer = true,
                     ValidIssuer = builder.Configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("JWT_ISSUER"),
                     ValidateAudience = true,
@@ -51,8 +53,10 @@ builder.Services.AddAuthorization(opts => {
         policy.RequireClaim(ClaimTypes.Role, "admin");
     });
     opts.AddPolicy("Users", policy => {
-        policy.RequireClaim(ClaimTypes.Role, "User");
+        policy.RequireClaim(ClaimTypes.Role, "user");
     });
+    opts.AddPolicy("AllUsers",
+        policy => policy.RequireClaim(ClaimTypes.Role));
 });
 builder.Services.AddSwaggerGen(options => {
     options.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
