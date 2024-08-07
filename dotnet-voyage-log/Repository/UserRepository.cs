@@ -54,7 +54,7 @@ public class UserRepository : IUserRepository
 
     public User? RetrieveSingleUserByUsername(string username) {
         try {
-            return _context.Users.Where(x => x.Username == username).FirstOrDefault();
+            return _context.Users.Where(x => x.Username.ToLower() == username.ToLower()).FirstOrDefault();
         } catch (Exception e) {
             _logger.LogError($"Error: {e.Message}");
             throw new Exception($"Internal server error");
