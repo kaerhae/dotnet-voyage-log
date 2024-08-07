@@ -32,3 +32,16 @@ export INIT_ADMIN_USERNAME=<INIT_ADMIN_USERNAME>
 export INIT_ADMIN_EMAIL=<INIT_ADMIN_EMAIL>
 export INIT_ADMIN_PASSWORD=<INIT_ADMIN_PASSWORD>
 ```
+
+
+## Getting started
+
+App can be started easily as a release with docker-compose. Compose file contains declarations for dotnet-voyage-log, migration, Postgres database, and PGAdmin. Compose file uses arguments, which are passed to containers and then used as a environment variables. Before starting, it is recommended to change args from docker-compose.
+
+Containers can be started with:
+```bash
+docker-compose up -d
+```
+
+
+<u>Note:</u> Migration container executes only database update command and then exits. 
