@@ -1,17 +1,18 @@
 using System.Security.Claims;
 using System.Text;
+using Amazon.S3;
 using dotnet_voyage_log.Context;
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Repository;
 using dotnet_voyage_log.Service;
 using dotnet_voyage_log.Utilities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.IdentityModel.Tokens;
+
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -28,6 +29,26 @@ builder.Services.AddSingleton<DataContext>();
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddSingleton<IConfigs, Configs>();
 builder.Services.AddScoped<IAuthentication, Authentication>();
+builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+builder.Services.AddAWSService<IAmazonS3>();
+    builder.Services.AddSingleton<IS3Service, S3Service>(sp =>
+        {
+            string bucketName = sp.GetRequiredService<IConfigs>().GetImageBucket();
+            
+            /* If development, use localstack service */
+            if(builder.Environment.IsDevelopment()) {
+
+                var client =  new AmazonS3Client(new AmazonS3Config{
+                    ForcePathStyle = true,
+                    ServiceURL = "http://localstack:4566",
+                });
+                return new S3Service(client, bucketName, sp.GetRequiredService<ILogger<IS3Service>>());
+            }
+
+            /* Production, use default aws options */
+            return new S3Service(new AmazonS3Client(), bucketName, sp.GetRequiredService<ILogger<IS3Service>>());
+
+        });
 
 builder.Services.AddAuthorization();
 builder.Services

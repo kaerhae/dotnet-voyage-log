@@ -156,4 +156,20 @@ public class Configs : IConfigs {
 
         throw new Exception("adminPass is missing");
     }
+
+    public string GetImageBucket()
+    {
+        string? bucketName;
+        bucketName = Environment.GetEnvironmentVariable("S3_BUCKET_NAME");
+        if(bucketName != null) {
+            return bucketName;
+        }
+
+        bucketName = _config["AWS:S3BucketName"];
+        if (bucketName != null) {
+            return bucketName;
+        }
+
+        throw new Exception("Voyage bucket name is missing");
+    }
 }

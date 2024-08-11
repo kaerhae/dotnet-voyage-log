@@ -1,6 +1,29 @@
 version: "3"
-
 services:
+  localstack:
+    image: localstack/localstack:3.6
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3:4566
+      - HOSTNAME=localstack
+      - HOSTNAME_EXTERNAL=localstack
+      - DEFAULT_REGION=eu-north-1
+  aws-cli:
+    image: amazon/aws-cli
+    depends_on:
+      localstack:
+        condition: service_healthy
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=eu-north-1
+    entrypoint: /bin/sh -c
+    command: >
+      "
+        aws s3 mb s3://voyage-bucket --endpoint http://localstack:4566 --region eu-north-1
+      "
+
   migration:
     image: dotnet-voyage-log-migration
     build:
@@ -10,17 +33,17 @@ services:
         POSTGRES_CONNECTION_STRING: User ID=postgres;Password=postgres;Host=postgres;Port=5432;Database=voyager
         INIT_ADMIN_USERNAME: admin
         INIT_ADMIN_EMAIL: adminpassword
-        INIT_ADMIN_PASSWORD: admin@admin.com  
+        INIT_ADMIN_PASSWORD: admin@admin.com
     depends_on:
       postgres:
         condition: service_healthy
     restart: on-failure
     
-  webapi-dev:
+  webapi:
     image: dotnet-voyage-log
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.dev
       args:
         POSTGRES_CONNECTION_STRING: User ID=postgres;Password=postgres;Host=postgres;Port=5432;Database=voyager
         SECRET_KEY: 12345678901234567890123456789012345678910123456
@@ -28,14 +51,18 @@ services:
         JWT_ISSUER: webapi:8080
         INIT_ADMIN_USERNAME: admin
         INIT_ADMIN_EMAIL: adminpassword
-        INIT_ADMIN_PASSWORD: admin@admin.com  
+        INIT_ADMIN_PASSWORD: admin@admin.com
+        AWS_S3_SERVICE_URL: http://localstack:4566
+        AWS_ACCESS_KEY_ID: test
+        AWS_SECRET_ACCESS_KEY: test
+        S3_BUCKET_NAME: voyage-bucket
     depends_on:
       postgres:
         condition: service_healthy
     restart: on-failure
     ports:
-      - 8080:8080  
-
+      - 8080:8080 
+    
   postgres:
     image: postgres:12.3-alpine
     restart: always
@@ -45,11 +72,12 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
-        test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
-        interval: 30s
-        timeout: 60s
-        retries: 5
-        start_period: 80s  
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s  
+    
   pgadmin:
     image: dpage/pgadmin4:4.23
     environment:
@@ -62,7 +90,7 @@ services:
       - pgadmin:/var/lib/pgadmin
     depends_on:
       - postgres
-
+    
 volumes:
   postgres:
   pgadmin:

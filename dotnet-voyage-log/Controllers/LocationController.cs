@@ -20,28 +20,28 @@ public class LocationController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("location/countries")]
+    [HttpGet("Countries")]
     public List<Country> GetAllCountries()
     {
         return _service.GetAllCountries();
     }
 
     [AllowAnonymous]
-    [HttpGet("location/regions")]
+    [HttpGet("Regions")]
     public List<Region> GetAllRegions()
     {
         return _service.GetAllRegions();
     }
 
     [AllowAnonymous]
-    [HttpGet("location/countries/{name}")]
+    [HttpGet("Countries/{name}")]
     public Country GetCountry(string name)
     {
         return _service.GetSingleCountry(name);
     }
 
     [AllowAnonymous]
-    [HttpGet("location/regions/{name}")]
+    [HttpGet("Regions/{name}")]
     public Region GetRegion(string name)
     {
         return _service.GetSingleRegion(name);
