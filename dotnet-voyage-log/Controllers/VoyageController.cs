@@ -26,10 +26,11 @@ public class VoyageController : ControllerBase
     }
 
     [HttpPost("")]
-    public IActionResult Create([FromBody] Voyage newVoyage) {
+    public async Task<IActionResult> Create([FromForm] VoyageWithFiles newVoyage) {
         string id = GetUserId();
-        _service.CreateVoyage(Int64.Parse(id), newVoyage);
-        return Ok(new { message = "Voyage created" });
+        Voyage v = await _service.CreateVoyage(Int64.Parse(id), newVoyage);
+
+        return Ok(new { message = $"Voyage \"{v.Topic}\" created" });
     }
 
     [HttpPut("{id}")]

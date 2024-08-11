@@ -17,6 +17,14 @@ public class LocationRepository : ILocationRepository
         _context = context;
         _logger = logger;
     }
+
+    /// <summary>
+    /// Retrieves all countries from database and returns with list of region fields one-to-many relationship.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// List of countries
+    /// </returns>
     public List<Country> GetAllCountries()
     {
         try {
@@ -36,6 +44,13 @@ public class LocationRepository : ILocationRepository
         }
     }
 
+    /// <summary>
+    /// Retrieves all regions from database and returns with country field foreign key relationship.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// List of regions
+    /// </returns>
     public List<Region> GetAllRegions()
     {
         try {
@@ -56,6 +71,13 @@ public class LocationRepository : ILocationRepository
         }
     }
 
+    /// <summary>
+    /// Retrieves single country from database and returns with list of region fields one-to-many relationship.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// Nullable Country
+    /// </returns>
     public Country? GetSingleCountry(string name)
     {
         try {
@@ -74,6 +96,13 @@ public class LocationRepository : ILocationRepository
         }
     }
 
+    /// <summary>
+    /// Retrieves single region from database and returns with country fields foreign key relationship.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// Nullable Region
+    /// </returns>
     public Region? GetSingleRegion(string name)
     {
         try {

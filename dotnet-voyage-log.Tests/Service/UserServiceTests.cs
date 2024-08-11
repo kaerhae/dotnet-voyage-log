@@ -84,8 +84,8 @@ public class UserServiceTests
         _repository.Setup(x => x.RetrieveSingleUserByUsername(lUser.Username)).Returns(user);
         _auth.Setup(x => x.IsValidPassword(user.PasswdHash,lUser.Password)).Returns(false);
 
-        var exception = Assert.Throws<Exception>(() => _service.LoginUser(lUser));
-        Assert.Equal("Incorrect password", exception.Message);
+        var exception = Assert.Throws<UnauthorizedAccessException>(() => _service.LoginUser(lUser));
+        Assert.Equal("Attempted to perform an unauthorized operation.", exception.Message);
     }
 
     [Fact]
