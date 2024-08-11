@@ -8,4 +8,5 @@ public interface IConfigs {
     public string GetSecretKey();
     public string GetAudience();
     public string GetIssuer();
+    public string GetImageBucket();
 }
