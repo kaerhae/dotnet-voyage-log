@@ -113,8 +113,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+    }
+    else
+    {
+        app.UseExceptionHandler("/error");
+        app.UseStatusCodePagesWithReExecute("/error/{0}");
+    }app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
