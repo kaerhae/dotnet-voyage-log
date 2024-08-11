@@ -9,6 +9,12 @@ public class Configs : IConfigs {
     public Configs(IConfiguration config) {
         _config = config;
     }
+    /// <summary>
+    /// Returns connection string from either POSTGRES_CONNECTION_STRING env or ConnectionStrings:PostgresConn secret.
+    /// </summary>
+    /// <returns>
+    /// string: Connection string
+    /// </returns>
     public string GetConnectionString() {
         string? conn;
         conn = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
@@ -22,6 +28,12 @@ public class Configs : IConfigs {
         throw new Exception("Connection string missing");
     }
 
+    /// <summary>
+    /// Returns secret key from either SECRET_KEY env or JwtSettings:SecretKey secret.
+    /// </summary>
+    /// <returns>
+    /// string: Secret key
+    /// </returns>
     public string GetSecretKey() {
         string? secret;
         secret = Environment.GetEnvironmentVariable("SECRET_KEY");
@@ -36,6 +48,12 @@ public class Configs : IConfigs {
         throw new Exception("Secret key is missing");
     }
 
+    /// <summary>
+    /// Returns JWT Audience string from either JWT_AUDIENCE env or JwtSettings:Audience secret.
+    /// </summary>
+    /// <returns>
+    /// string: JWT Audience
+    /// </returns>
     public string GetAudience() {
         string? audience;
         audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
@@ -51,6 +69,12 @@ public class Configs : IConfigs {
         throw new Exception("Jwt Audience is missing");
     }
 
+    /// <summary>
+    /// Returns JWT Issuer string from either JWT_ISSUER env or JwtSettings:Issuer secret.
+    /// </summary>
+    /// <returns>
+    /// string: JWT Issuer
+    /// </returns>
     public string GetIssuer() {
         string? issuer;
         issuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
@@ -67,6 +91,12 @@ public class Configs : IConfigs {
     }
 
 
+    /// <summary>
+    /// Returns initial admin username from either INIT_ADMIN_USERNAME env or InitAdmin:Username secret.
+    /// </summary>
+    /// <returns>
+    /// string: Initial admin username
+    /// </returns>
     public string GetAdminUsername()
     {
         string? adminUser;
@@ -83,6 +113,12 @@ public class Configs : IConfigs {
         throw new Exception("adminUser is missing");
     }
 
+    /// <summary>
+    /// Returns initial admin email from either INIT_ADMIN_EMAIL env or InitAdmin:Email secret.
+    /// </summary>
+    /// <returns>
+    /// string: Initial admin email
+    /// </returns>
     public string GetAdminEmail()
     {
         string? adminEmail;
@@ -99,6 +135,12 @@ public class Configs : IConfigs {
         throw new Exception("adminEmail is missing");
     }
 
+    /// <summary>
+    /// Returns initial admin password from either INIT_ADMIN_PASSWORD env or InitAdmin:Password secret.
+    /// </summary>
+    /// <returns>
+    /// string: Initial admin password
+    /// </returns>
     public string GetAdminPassword()
     {
         string? adminPass;

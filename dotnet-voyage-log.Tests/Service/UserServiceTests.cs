@@ -146,11 +146,15 @@ public class UserServiceTests
         Assert.Equal("User not found", exception.Message);
     }
 
-    [Fact]
-    public void CreateNormalUser_ShouldBeOk()
+    [Theory]
+    [InlineData("Test")]
+    [InlineData("test")]
+    [InlineData("tEst")]
+    [InlineData("TeSt")]
+    public void CreateNormalUser_ShouldBeOk(string username)
     {
         User u = new User(){
-            Username = "test",
+            Username = username,
             Email = "test@test.com",
             PasswdHash = "1234",
             AppRole = "user"
@@ -163,17 +167,62 @@ public class UserServiceTests
         _repository.Setup(x => x.InsertUser(u));
 
         User result = _service.CreateNormalUser(s);
-
-        Assert.Equal(u.Username, result.Username);
+        
+        Assert.True(result.Username.All(char.IsLower));
+        Assert.NotEmpty(result.Username);
         Assert.Equal(u.Email, result.Email);
         Assert.Equal(u.AppRole, result.AppRole);
     }
 
     [Fact]
-    public void CreateAdminUser_ShouldBeOk()
+    public void CreateNormalUser_ShouldThrowExceptionIfExistsAlready()
     {
         User u = new User(){
             Username = "test",
+            Email = "test@test.com",
+            PasswdHash = "1234",
+            AppRole = "user"
+        };
+        SignupUser s = new SignupUser(){
+            Username = "test",
+            Email = "test@test.com",
+            Password = "1234"
+        };
+        _repository.Setup(x => x.RetrieveSingleUserByUsername(s.Username)).Returns(u);
+
+        var exception = Assert.Throws<Exception>(() => _service.CreateNormalUser(s));
+        Assert.Equal("Username test already exists", exception.Message);
+    }
+
+    [Fact]
+    public void CreateAdminUser_ShouldThrowExceptionIfExistsAlready()
+    {
+        User u = new User(){
+            Username = "test",
+            Email = "test@test.com",
+            PasswdHash = "1234",
+            AppRole = "user"
+        };
+        SignupUser s = new SignupUser(){
+            Username = "test",
+            Email = "test@test.com",
+            Password = "1234"
+        };
+        _repository.Setup(x => x.RetrieveSingleUserByUsername(s.Username)).Returns(u);
+
+        var exception = Assert.Throws<Exception>(() => _service.CreateAdminUser(s));
+        Assert.Equal("Username test already exists", exception.Message);
+    }
+
+    [Theory]
+    [InlineData("Test")]
+    [InlineData("test")]
+    [InlineData("tEst")]
+    [InlineData("TeSt")]
+    public void CreateAdminUser_ShouldBeOk(string username)
+    {
+        User u = new User(){
+            Username = username,
             Email = "test@test.com",
             PasswdHash = "1234",
             AppRole = "admin"
@@ -187,7 +236,8 @@ public class UserServiceTests
 
         User result = _service.CreateAdminUser(s);
 
-        Assert.Equal(u.Username, result.Username);
+        Assert.True(result.Username.All(char.IsLower));
+        Assert.NotEmpty(result.Username);
         Assert.Equal(u.Email, result.Email);
         Assert.Equal(u.AppRole, result.AppRole);
     }

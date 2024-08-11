@@ -34,7 +34,7 @@ public class DataContext : DbContext
             .Entity<User>()
             .HasData(new User(){
                 Id = 1,
-                Username = _config.GetAdminUsername(),
+                Username = _config.GetAdminUsername().ToLower(),
                 Email = _config.GetAdminEmail(),
                 PasswdHash = BC.HashPassword(_config.GetAdminPassword()),
                 AppRole = "admin"

@@ -15,6 +15,14 @@ public class TokenGenerator : ITokenGenerator
     public TokenGenerator(IConfigs config) {
         _config = config;
     }
+
+    /// <summary>
+    /// Token generation function. Requires SECRET_KEY, JWT_AUDIENCE, and JWT_ISSUER environment variables. 
+    /// Generates token, which has 1 day expiration, Subject contains User.Id and User.AppRole as claims.
+    /// </summary>
+    /// <returns>
+    /// string: Generated token
+    /// </returns>
     public string GenerateToken(User user)
     {
         /*

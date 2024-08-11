@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 
 namespace dotnet_voyage_log.Service;
+
 public class UserService : IUserService {
 
     private readonly ILogger<IUserService> _logger;
@@ -53,24 +54,38 @@ public class UserService : IUserService {
     }
 
     public User CreateAdminUser(SignupUser newUser) {
+        /* Check if user exists already */
+        User? isExisting = _repository.RetrieveSingleUserByUsername(newUser.Username);
+        if (isExisting != null) {
+            throw new Exception($"Username {newUser.Username} already exists");
+        }
+        /* In username field, removing case-insensitivity */
         User insertableUser = new User(){
-            Username = newUser.Username,
+            Username = newUser.Username.ToLower(),
             AppRole = "admin",
             Email = newUser.Email,
             PasswdHash = _auth.HashPassword(newUser.Password),
         };
+        /* Check that contains all necessary fields */
         insertableUser.CheckUser();
         _repository.InsertUser(insertableUser);
         return insertableUser;
     }
 
     public User CreateNormalUser(SignupUser newUser) {
-       User insertableUser = new User(){
-            Username = newUser.Username,
+        /* Check if user exists already */
+        User? isExisting = _repository.RetrieveSingleUserByUsername(newUser.Username);
+        if (isExisting != null) {
+            throw new Exception($"Username {newUser.Username} already exists");
+        }
+        /* In username field, removing case-insensitivity */
+        User insertableUser = new User(){
+            Username = newUser.Username.ToLower(),
             AppRole = "user",
             Email = newUser.Email,
             PasswdHash = _auth.HashPassword(newUser.Password),
         };
+        /* Check that contains all necessary fields */
         insertableUser.CheckUser();
         _repository.InsertUser(insertableUser);
         return insertableUser;
@@ -103,8 +118,8 @@ public class UserService : IUserService {
     }
 
     private void UpdateFields(User oldRecord, User updatedUser) {
-        oldRecord.Username = updatedUser.Username;
-        oldRecord.Email = updatedUser.Email;
+        oldRecord.Username = updatedUser.Username.ToLower();
+        oldRecord.Email = updatedUser.Email != null ? updatedUser.Email.ToLower() : "";
         oldRecord.AppRole = updatedUser.AppRole;
         oldRecord.PasswdHash = updatedUser.PasswdHash;
     }
