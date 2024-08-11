@@ -20,6 +20,15 @@ public class UserService : IUserService {
         _logger = logger;
     }
 
+    /// <summary>
+    /// Takes LoginUser object, checks if user exists, then validates password, and finally
+    /// generates token.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <exception cref="UnauthorizedAccessException"/>
+    /// <returns>
+    /// Token as string
+    /// </returns>
     public string LoginUser(LoginUser user) {
         user.CheckLoginUser();
         User? isUser = _repository.RetrieveSingleUserByUsername(user.Username);
@@ -29,12 +38,18 @@ public class UserService : IUserService {
 
         bool isCorrectPassword = _auth.IsValidPassword(isUser.PasswdHash, user.Password);
         if (!isCorrectPassword) {
-            throw new Exception("Incorrect password");
+            throw new UnauthorizedAccessException();
         }
         
         return _generator.GenerateToken(isUser);
     }
-
+    /// <summary>
+    /// Retrieves all existing users from database.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// Users as list
+    /// </returns>
     public List<User> GetAll() {
         try {
             return _repository.RetrieveAllUsers();
@@ -43,7 +58,13 @@ public class UserService : IUserService {
             throw new Exception("Error on fetching all users");
         }
     }
-
+    /// <summary>
+    /// Takes id and retrieves single user by id. If exists, will return it. If not, returns exception.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// User
+    /// </returns>
     public User GetById(long id) {
         User? user = _repository.RetrieveSingleUserById(id);
         if (user != null) {
@@ -52,7 +73,13 @@ public class UserService : IUserService {
 
         throw new Exception("User not found");
     }
-
+    /// <summary>
+    /// Takes SignupUser and creates new admin user. Throws error if username exists.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// User
+    /// </returns>
     public User CreateAdminUser(SignupUser newUser) {
         /* Check if user exists already */
         User? isExisting = _repository.RetrieveSingleUserByUsername(newUser.Username);
@@ -71,7 +98,13 @@ public class UserService : IUserService {
         _repository.InsertUser(insertableUser);
         return insertableUser;
     }
-
+    /// <summary>
+    /// Takes SignupUser and creates new normal user. Throws error if username exists.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// User
+    /// </returns>
     public User CreateNormalUser(SignupUser newUser) {
         /* Check if user exists already */
         User? isExisting = _repository.RetrieveSingleUserByUsername(newUser.Username);
@@ -91,8 +124,14 @@ public class UserService : IUserService {
         return insertableUser;
     }
 
-
-
+    /// <summary>
+    /// Takes userId and User object. If user exists, updates fields with parameter User properties.
+    /// Throws error if username does not exist.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// User
+    /// </returns>
     public User UpdateUser(long userId, User updatedUser)
     {
         updatedUser.CheckUser();
@@ -106,6 +145,14 @@ public class UserService : IUserService {
         throw new Exception("User not found");
     }
 
+    /// <summary>
+    /// Takes userId and checks if it exists. If it exists, will delete it. 
+    /// Throws error if username does not exist.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// User
+    /// </returns>
     public User DeleteUser(long userId) 
     {
         User? user = _repository.RetrieveSingleUserById(userId);

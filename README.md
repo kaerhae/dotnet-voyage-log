@@ -1,7 +1,18 @@
 # dotnet-voyage-log
 
 ## Overview
-Travel logging backend service powered by ASPNET core, PostgreSQL, and S3 storage. Service contains user-management and voyage-log management, which can be integrated to frontend or CLI. Service is mostly aimed to run with docker-compose, but it scalable enough to run on IIS server with external PostgreSQL database and S3 storage. 
+Travel logging backend service powered by ASPNET core, PostgreSQL, and S3 storage. Service contains user-management and voyage-log management, which can be integrated to frontend or CLI. Service is mostly aimed to run with docker-compose, but it scalable enough to run on IIS server with S3 storage and external PostgreSQL database.
+
+Service has policies for admin, user and anonymous access. Voyage-log supports following details:
+ - Topic
+ - Description
+ - Notes
+ - Country
+ - Region
+ - Locations longitude coordinate
+ - Locations latitude coordinate
+ - Multiple images
+    * Images are received as IFormFile, and are uploaded to S3 storage. Voyage-log will be saved with image keys as identifiers, and can be retrieved to frontend by ImageController operation.
 
 For further description of app CRUD operations, read controller documentation [here](dotnet-voyage-log/Controllers/README.md).
 

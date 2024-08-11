@@ -1,8 +1,10 @@
 
+using System.Reflection;
 using Castle.Core.Logging;
 using dotnet_voyage_log.Interfaces;
 using dotnet_voyage_log.Models;
 using dotnet_voyage_log.Service;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -15,6 +17,7 @@ public class VoyageServiceTests
     private Mock<IVoyageRepository> _repository;
     private Mock<IUserRepository> _userRepository;
     private Mock<IAuthentication> _auth;
+    private Mock<IS3Service> _s3Service;
     private Mock<ILogger<IVoyageService>> _logger;
 
     public VoyageServiceTests()
@@ -23,7 +26,8 @@ public class VoyageServiceTests
         _repository = new Mock<IVoyageRepository>();
         _auth = new Mock<IAuthentication>();
         _logger = new Mock<ILogger<IVoyageService>>();
-        _service = new VoyageService(_repository.Object, _auth.Object, _logger.Object);
+        _s3Service = new Mock<IS3Service>();
+        _service = new VoyageService(_repository.Object, _auth.Object, _s3Service.Object, _logger.Object);
     }
 
     [Fact]
@@ -43,8 +47,51 @@ public class VoyageServiceTests
     }
 
     [Fact]
-    public void CreateVoyage_ShouldBeOk()
+    public async void CreateVoyage_ShouldBeOk()
     {
+        VoyageWithFiles vf = new VoyageWithFiles(){
+            Topic = "Test",
+            UserId = 1,
+            RegionId = 1,
+        };
+
+        Voyage v = new Voyage(){
+            Topic = "Test",
+            UserId = 1,
+            RegionId = 1
+        };
+
+        var content = "test content";
+        var fileName = "test.pdf";
+        var stream = new MemoryStream();
+        var writer = new StreamWriter(stream);
+        writer.Write(content);
+        writer.Flush();
+        stream.Position = 0;
+
+        IFormFile mockFile = new FormFile(stream, 0, stream.Length, "id_from_form", fileName);
+
+        _s3Service.Setup(x => x.UploadImage(mockFile)).ReturnsAsync("key");
+        _repository.Setup(x => x.CreateVoyage(v));
+
+        Voyage result = await _service.CreateVoyage(1, vf);
+
+        Assert.Equal(v.Topic, result.Topic);
+        Assert.Equal(v.UserId, result.UserId);
+        Assert.Equal(v.RegionId, result.RegionId);
+
+    }
+
+    [Fact]
+    public async void CreateVoyage_ShouldBeOkWithEmptyImages()
+    {
+        VoyageWithFiles vf = new VoyageWithFiles(){
+            Topic = "Test",
+            UserId = 1,
+            RegionId = 1,
+            Images = []
+        };
+
         Voyage v = new Voyage(){
             Topic = "Test",
             UserId = 1,
@@ -53,39 +100,79 @@ public class VoyageServiceTests
 
         _repository.Setup(x => x.CreateVoyage(v));
 
-        _service.CreateVoyage(1, v);
+        Voyage result = await _service.CreateVoyage(1, vf);
+
+        Assert.Equal(v.Topic, result.Topic);
+        Assert.Equal(v.UserId, result.UserId);
+        Assert.Equal(v.RegionId, result.RegionId);
 
     }
 
-    
+    [Fact]
+    public async void CreateVoyage_ShouldBeOkWithImageList()
+    {
+        var content = "test content";
+        var fileName = "test.jpg";
+        var stream = new MemoryStream();
+        var writer = new StreamWriter(stream);
+        writer.Write(content);
+        writer.Flush();
+        stream.Position = 0;
+
+        IFormFile mockFile = new FormFile(stream, 0, stream.Length, "test", fileName);
+
+        VoyageWithFiles vf = new VoyageWithFiles(){
+            Topic = "Test",
+            UserId = 1,
+            RegionId = 1,
+            Images = [mockFile]
+        };
+
+        Voyage v = new Voyage(){
+            Topic = "Test",
+            UserId = 1,
+            RegionId = 1
+        };
+
+        _repository.Setup(x => x.CreateVoyage(v));
+        _s3Service.Setup(x => x.UploadImage(mockFile)).ReturnsAsync("key");
+
+        Voyage result = await _service.CreateVoyage(1, vf);
+
+        Assert.Equal(v.Topic, result.Topic);
+        Assert.Equal(v.UserId, result.UserId);
+        Assert.Equal(v.RegionId, result.RegionId);
+        Assert.Equal(new List<string>(){ "key" }, result.Images);
+
+    }
 
     [Theory]
     [InlineData("", 1)]
     [InlineData("foo", 0)]
 
-    public void CreateVoyage_ShouldThrowErrorWhenInvalidVoyage(string a, long b)
+    public async void CreateVoyage_ShouldThrowErrorWhenInvalidVoyage(string a, long b)
     {
-        Voyage v = new Voyage(){
+        VoyageWithFiles v = new VoyageWithFiles(){
             Topic = a,
             RegionId = b,
 
         };
 
-        var exception = Assert.Throws<Exception>(() => _service.CreateVoyage(1, v));
+        var exception = await Assert.ThrowsAsync<Exception>(async () => await _service.CreateVoyage(1, v));
 
         Assert.Equal("Malformatted voyage", exception.Message);
     }
 
     [Fact]
-    public void CreateVoyage_ShouldThrowErrorWhenInvalidUserId()
+    public async void CreateVoyage_ShouldThrowErrorWhenInvalidUserId()
     {
-        Voyage v = new Voyage(){
+        VoyageWithFiles v = new VoyageWithFiles(){
             Topic = "foo",
             RegionId = 1,
 
         };
 
-        var exception = Assert.Throws<Exception>(() => _service.CreateVoyage(0, v));
+        var exception = await Assert.ThrowsAsync<Exception>(async () => await _service.CreateVoyage(0, v));
 
         Assert.Equal("Malformatted voyage", exception.Message);
     }
@@ -270,6 +357,5 @@ public class VoyageServiceTests
 
         Assert.Equal("Voyage not found", exception.Message);
     }
-
 
 }

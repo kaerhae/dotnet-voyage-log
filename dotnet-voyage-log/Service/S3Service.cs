@@ -48,12 +48,12 @@ public class S3Service : IS3Service {
     /// </summary>
     /// <exception cref="FileNotFoundException">
     /// </exception>
-    public async Task UploadImage(IFormFile? file)
+    public async Task<string> UploadImage(IFormFile? file)
     {
         if (file == null) {
             throw new FileNotFoundException();
         }
-        var fileName = $"voyage-image-{new Random().Next(100)}.jpg";
+        var fileName = GenKey();
         try {
             using var newMemoryStream = new MemoryStream();
             file.CopyTo(newMemoryStream);
@@ -65,6 +65,8 @@ public class S3Service : IS3Service {
                 };
             await _client.PutObjectAsync(request);
             _logger.LogInformation($"Image uploaded with id: {fileName}");
+
+            return fileName;
         } catch (Exception e) {
             _logger.LogError($"Error: {e.Message}");
             throw new Exception("Internal server error");
@@ -141,6 +143,10 @@ public class S3Service : IS3Service {
             };
 
         return _client.GetPreSignedURL(urlRequest);
+    }
+
+    private string GenKey() {
+        return $"voyage-image-{new Random().Next(100)}.jpg";
     }
 
 }

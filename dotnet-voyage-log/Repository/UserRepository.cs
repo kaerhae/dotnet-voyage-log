@@ -16,6 +16,13 @@ public class UserRepository : IUserRepository
         _logger = logger;
     }
 
+    /// <summary>
+    /// Retrieves all users from the database with voyages field one-to-many relationship
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// List of User
+    /// </returns>
     public List<User> RetrieveAllUsers() {
         try {
             return _context.Users.Select(u => new User{
@@ -43,6 +50,13 @@ public class UserRepository : IUserRepository
         }
     }
 
+    /// <summary>
+    /// Retrieves single user by id from database.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// Nullable User
+    /// </returns>
     public User? RetrieveSingleUserById(long id) {
         try {
             return _context.Users.Where(x => x.Id == id).FirstOrDefault();
@@ -52,6 +66,13 @@ public class UserRepository : IUserRepository
         }
     }
 
+    /// <summary>
+    /// Retrieves single user by name from database.
+    /// </summary>
+    /// <exception cref="Exception" />
+    /// <returns>
+    /// Nullable User
+    /// </returns>
     public User? RetrieveSingleUserByUsername(string username) {
         try {
             return _context.Users.Where(x => x.Username.ToLower() == username.ToLower()).FirstOrDefault();
@@ -61,6 +82,10 @@ public class UserRepository : IUserRepository
         }
     }
 
+    /// <summary>
+    /// Takes User object and insert it to database.
+    /// </summary>
+    /// <exception cref="Exception" />
     public void InsertUser(User newUser){
        try {
             _context.Users.Add(newUser);
@@ -71,6 +96,10 @@ public class UserRepository : IUserRepository
         }
     }
 
+    /// <summary>
+    /// Takes User object and inserts with updated fields to existing user.
+    /// </summary>
+    /// <exception cref="Exception" />
     public void UpdateAllFields(User updatedUser) {
         try {
             _context.Users.Update(updatedUser);
@@ -81,6 +110,10 @@ public class UserRepository : IUserRepository
         }
     }
 
+    /// <summary>
+    /// Takes User object and removes it from database.
+    /// </summary>
+    /// <exception cref="Exception" />
     public void DeleteUser(User user) {
         try {
             _context.Users.Remove(user);
